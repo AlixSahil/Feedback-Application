@@ -192,7 +192,7 @@ const FeedbackCollection = () => {
 
     return (
         <div 
-            className="min-h-screen flex items-center justify-center"
+            className="min-h-screen flex flex-col items-center justify-center"
             style={{
                 backgroundImage: 'url("/assets/bg-image.jpg")',
                 backgroundSize: 'cover',
@@ -264,11 +264,11 @@ const FeedbackCollection = () => {
                 </span>
             </button>
 
-            <div className="container mx-auto p-2 sm:p-6 flex flex-col md:flex-row gap-4 sm:gap-10 justify-center items-center w-full max-w-6xl">
+            <div className="container mx-auto p-2 sm:p-6 flex flex-col gap-4 sm:gap-10 justify-center items-center w-full max-w-6xl mt-16 sm:mt-20">
                 {/* Feedback Form */}
                 <form
                     onSubmit={handleSubmit}
-                    className="p-4 sm:p-6 w-full max-w-4xl bg-white/90 rounded-lg shadow-md flex flex-col items-center gap-3 sm:gap-4 mt-4 sm:mt-10 backdrop-blur-sm animate-fade-in"
+                    className="p-4 sm:p-6 w-full max-w-4xl bg-white/90 rounded-lg shadow-md flex flex-col items-center gap-3 sm:gap-4 backdrop-blur-sm animate-fade-in"
                 >
                     <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-2 sm:mb-4 animate-slide-up tracking-wide">
                         Hindalco Industries Limited, Muri Works
