@@ -60,17 +60,16 @@ const Auth = () => {
         <div 
             className="min-h-screen flex items-center justify-center"
             style={{
-                backgroundImage: 'url("/bg-image.jpg")',
+                backgroundImage: 'url("/assets/bg-image.jpg")',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat'
             }}
         >
             <div className="bg-white/90 p-8 rounded-lg shadow-md w-96 backdrop-blur-sm">
-                {/* Logo Section */}
                 <div className="flex justify-center mb-6">
                     <img 
-                        src="/logo.png" 
+                        src="/assets/logo.png" 
                         alt="Company Logo" 
                         className="h-20 w-auto"
                     />
@@ -92,6 +91,7 @@ const Auth = () => {
                             required
                         />
                     </div>
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Password</label>
                         <input
@@ -102,6 +102,7 @@ const Auth = () => {
                             required
                         />
                     </div>
+
                     {!isLogin && (
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Role</label>
@@ -115,6 +116,7 @@ const Auth = () => {
                             </select>
                         </div>
                     )}
+
                     <button
                         type="submit"
                         disabled={loading}
@@ -123,6 +125,7 @@ const Auth = () => {
                         {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
                     </button>
                 </form>
+
                 <div className="mt-4 text-center">
                     <button
                         onClick={() => setIsLogin(!isLogin)}

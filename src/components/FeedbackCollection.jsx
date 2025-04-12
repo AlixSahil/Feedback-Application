@@ -194,39 +194,95 @@ const FeedbackCollection = () => {
         <div 
             className="min-h-screen flex items-center justify-center"
             style={{
-                backgroundImage: 'url("/bg-image.jpg")',
+                backgroundImage: 'url("/assets/bg-image.jpg")',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat'
             }}
         >
-            <div className="container mx-auto p-6 flex flex-col md:flex-row gap-10 justify-center items-center">
-                {/* Logout Button */}
+            {/* Admin Dashboard Button - Top Left */}
+            {userRole === 'admin' && (
                 <button
-                    onClick={handleLogout}
-                    className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                    onClick={() => navigate('/admin')}
+                    className="absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg 
+                    hover:from-blue-700 hover:to-blue-800 
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 
+                    transform hover:scale-105 active:scale-95 transition-all duration-300 
+                    shadow-lg hover:shadow-xl
+                    font-semibold text-sm sm:text-base
+                    flex items-center justify-center gap-2
+                    group"
                 >
-                    Logout
+                    <svg 
+                        className="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-300" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24" 
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" 
+                        />
+                    </svg>
+                    <span className="transform group-hover:translate-x-1 transition-transform duration-300">
+                        Go to Admin Dashboard
+                    </span>
                 </button>
+            )}
 
+            {/* Logout Button - Top Right */}
+            <button
+                onClick={handleLogout}
+                className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-lg 
+                hover:from-red-700 hover:to-red-800 
+                focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                transform hover:scale-105 active:scale-95 transition-all duration-300 
+                shadow-lg hover:shadow-xl
+                font-semibold text-sm sm:text-base
+                flex items-center justify-center gap-2
+                group"
+            >
+                <svg 
+                    className="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-300" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24" 
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+                    />
+                </svg>
+                <span className="transform group-hover:translate-x-1 transition-transform duration-300">
+                    Logout
+                </span>
+            </button>
+
+            <div className="container mx-auto p-2 sm:p-6 flex flex-col md:flex-row gap-4 sm:gap-10 justify-center items-center w-full max-w-6xl">
                 {/* Feedback Form */}
                 <form
                     onSubmit={handleSubmit}
-                    className="p-6 w-full max-w-lg bg-white/90 rounded-lg shadow-lg flex flex-col items-center gap-4 mt-10 backdrop-blur-sm"
+                    className="p-4 sm:p-6 w-full max-w-4xl bg-white/90 rounded-lg shadow-md flex flex-col items-center gap-3 sm:gap-4 mt-4 sm:mt-10 backdrop-blur-sm animate-fade-in"
                 >
-                    <h1 className="text-3xl font-bold text-center text-gray-800">
-                        Hindalco Industries Limited
+                    <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-2 sm:mb-4 animate-slide-up tracking-wide">
+                        Hindalco Industries Limited, Muri Works
                     </h1>
-                    <h2 className="text-2xl font-semibold text-center text-gray-700 mb-4">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-center text-gray-700 mb-6 sm:mb-8 animate-slide-up animation-delay-100 tracking-wider uppercase">
                         Survey Form
                     </h2>
-                    <div className="w-full border-t border-gray-300 my-2"></div>
+                    <div className="w-full border-t border-gray-300 my-1 sm:my-2 animate-slide-up animation-delay-200"></div>
 
                     <select
                         value={formData.department}
                         onChange={handleChange}
                         name="department"
-                        className="w-full bg-gray-200/90 px-4 py-2 rounded-lg shadow focus:ring focus:ring-blue-500"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base animate-slide-up animation-delay-300"
                     >
                         <option value="">Select Department</option>
                         <option value="HR">HR</option>
@@ -239,64 +295,91 @@ const FeedbackCollection = () => {
                         onChange={handleChange}
                         type="text"
                         name="name"
-                        className="w-full bg-gray-200/90 px-4 py-2 rounded-lg shadow focus:ring focus:ring-blue-500"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base animate-slide-up animation-delay-400"
                         placeholder="Enter your name..."
                     />
-                    <div className="w-full bg-gray-200/90 px-4 py-2 rounded-lg shadow">
+                    <div className="w-full rounded-md border-gray-300 shadow-sm text-sm sm:text-base animate-slide-up animation-delay-500">
                         <span className="font-semibold">Email: </span>
                         {currentUser?.email}
                     </div>
 
                     {/* Questions with Ratings */}
-                    <div className="w-full space-y-4">
-                        {questions.map((question) => (
-                            <div key={question.id} className="flex items-center justify-between gap-4">
-                                <p className="font-medium text-gray-700 flex-1">{question.text}</p>
-                                <div className="flex items-center gap-2">
-                                    {[1, 2, 3, 4, 5].map((rating) => (
-                                        <label key={rating} className="flex items-center">
-                                            <input
-                                                type="radio"
-                                                name={`rating-${question.id}`}
-                                                value={rating}
-                                                checked={formData.ratings[question.id] === rating.toString()}
-                                                onChange={() => handleRatingChange(question.id, rating.toString())}
-                                                className="form-radio h-4 w-4 text-blue-600"
-                                            />
-                                            <span className="ml-1">{rating}</span>
-                                        </label>
-                                    ))}
-                                </div>
+                    {questions.map((question, index) => (
+                        <div key={question.id} className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 animate-slide-up"
+                             style={{ animationDelay: `${(index + 6) * 100}ms` }}>
+                            <p className="text-gray-700 flex-1 text-sm sm:text-base">{question.text}</p>
+                            <div className="flex gap-1 sm:gap-2">
+                                {[1, 2, 3, 4, 5].map((rating) => (
+                                    <button
+                                        key={rating}
+                                        type="button"
+                                        onClick={() => handleRatingChange(question.id, rating)}
+                                        className={`
+                                            w-8 h-8 sm:w-10 sm:h-10 rounded-md
+                                            flex items-center justify-center
+                                            transition-all duration-300 ease-in-out
+                                            transform hover:scale-110 hover:rotate-3
+                                            ${formData.ratings[question.id] === rating
+                                                ? 'bg-blue-600 text-white scale-110 shadow-lg ring-2 ring-blue-400'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                                            }
+                                            ${formData.ratings[question.id] >= rating
+                                                ? 'bg-blue-600 text-white'
+                                                : ''
+                                            }
+                                            hover:z-10 relative
+                                            group
+                                        `}
+                                    >
+                                        <span className="transform group-hover:scale-125 transition-transform duration-200">
+                                            {rating}
+                                        </span>
+                                    </button>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
 
-                    {/* Final Comment Box */}
                     <textarea
                         value={formData.finalComment}
                         onChange={handleChange}
                         name="finalComment"
-                        rows={4}
-                        className="w-full bg-gray-200/90 px-4 py-2 rounded-lg shadow focus:ring focus:ring-blue-500"
-                        placeholder="Any additional comments or suggestions..."
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base animate-slide-up animation-delay-1100"
+                        placeholder="Additional comments..."
+                        rows="3"
                     ></textarea>
 
-                    <button className="w-full bg-gradient-to-r from-blue-600 to-green-500 text-white px-4 py-2 rounded-lg hover:shadow-lg transform hover:scale-105 transition">
-                        Submit Feedback
+                    <button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg 
+                        hover:from-blue-700 hover:to-blue-800 
+                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 
+                        transform hover:scale-105 active:scale-95 transition-all duration-300 
+                        shadow-lg hover:shadow-xl
+                        font-semibold text-sm sm:text-base
+                        flex items-center justify-center gap-2
+                        group
+                        animate-slide-up animation-delay-1200"
+                    >
+                        <svg 
+                            className="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-300" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24" 
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2} 
+                                d="M5 13l4 4L19 7" 
+                            />
+                        </svg>
+                        <span className="transform group-hover:translate-x-1 transition-transform duration-300">
+                            Submit Feedback
+                        </span>
                     </button>
                 </form>
-
-                {/* Admin Dashboard Button - Only visible to admin */}
-                {userRole === 'admin' && (
-                    <div className="w-full md:w-1/3 text-center">
-                        <button
-                            onClick={() => navigate('/admin')}
-                            className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
-                        >
-                            Go to Admin Dashboard
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     );
