@@ -1,10 +1,9 @@
-import { db } from "../firebase";
-import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
+import { getFeedbacks, addFeedback, deleteFeedback } from '../services/api';
 
 const questions = [
     {
@@ -48,6 +47,8 @@ const FeedbackCollection = () => {
         }, {})
     });
     const [allfeedbacks, setAllFeedBacks] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleLogout = async () => {
         try {
@@ -60,14 +61,15 @@ const FeedbackCollection = () => {
 
     const fetchFeedbacks = async () => {
         try {
-            const querySnapshot = await getDocs(collection(db, "feedbacks"));
-            const feedbacks = [];
-            querySnapshot.forEach((doc) => {
-                feedbacks.push({ id: doc.id, ...doc.data() });
-            });
+            setLoading(true);
+            const feedbacks = await getFeedbacks();
             setAllFeedBacks(feedbacks);
+            setError(null);
         } catch (error) {
             console.error("Error fetching feedbacks: ", error);
+            setError('Failed to fetch feedbacks');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -95,67 +97,41 @@ const FeedbackCollection = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-      
-        // Check if department is selected
-        if (!formData.department) {
-            alert("Please select a department before submitting the feedback.");
-            return;
-        }
-
-        // Check if user has already submitted feedback
-        const existingFeedback = allfeedbacks.find(feedback => feedback.userId === currentUser.uid);
-        if (existingFeedback) {
-            alert("You have already submitted feedback. Only one feedback per user is allowed.");
-            return;
-        }
-
-        // Check if all ratings are provided
-        const missingRatings = questions.filter(q => !formData.ratings[q.id]);
-        if (missingRatings.length > 0) {
-            alert("Please provide ratings for all questions.");
-            return;
-        }
-
-        const newFeedback = {
-          name: formData.name,
-          email: formData.email,
-          department: formData.department,
-          finalComment: formData.finalComment,
-          ratings: formData.ratings,
-          timestamp: new Date(),
-          userId: currentUser.uid
-        };
-      
         try {
-          await addDoc(collection(db, "feedbacks"), newFeedback);
-          alert("Feedback submitted successfully!");
-          await fetchFeedbacks();
-          
-          setFormData({
-            department: '',
-            name: '',
-            email: currentUser?.email || '',
-            finalComment: '',
-            ratings: questions.reduce((acc, q) => {
-                acc[q.id] = '';
-                return acc;
-            }, {})
-          });
+            setLoading(true);
+            await addFeedback(formData);
+            setFormData({
+                department: '',
+                name: '',
+                email: currentUser?.email || '',
+                finalComment: '',
+                ratings: questions.reduce((acc, q) => {
+                    acc[q.id] = '';
+                    return acc;
+                }, {})
+            });
+            await fetchFeedbacks();
+            alert('Feedback submitted successfully!');
         } catch (error) {
-          console.error("Error adding feedback: ", error);
-          alert("Failed to submit feedback.");
+            console.error('Error submitting feedback:', error);
+            alert('Failed to submit feedback. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleDelete = async (feedbackId) => {
         if (window.confirm("Are you sure you want to delete this feedback?")) {
             try {
-                await deleteDoc(doc(db, "feedbacks", feedbackId));
+                setLoading(true);
+                await deleteFeedback(feedbackId);
                 await fetchFeedbacks();
                 alert("Feedback deleted successfully!");
             } catch (error) {
-                console.error("Error deleting feedback: ", error);
+                console.error("Error deleting feedback:", error);
                 alert("Failed to delete feedback.");
+            } finally {
+                setLoading(false);
             }
         }
     };

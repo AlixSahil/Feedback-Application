@@ -1,32 +1,36 @@
-import { db } from "../firebase";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import * as XLSX from 'xlsx';
+import { getFeedbacks, deleteFeedback } from '../services/api';
 
 const questions = [
     {
         id: 1,
-        text: "How satisfied are you with the response time of the department?",
-        category: "Response Time"
+        text: "Does the service department keep up to the services as per agreed plan?",
+        category: "Service Adherence"
     },
     {
         id: 2,
-        text: "How would you rate the quality of service provided?",
-        category: "Service Quality"
+        text: "Is it clear who is responsible for your concern in the service dept.?",
+        category: "Responsibility Clarity"
     },
     {
         id: 3,
-        text: "How effective was the communication with the department?",
-        category: "Communication"
+        text: "How satisfied are you with the EOHS aspects of the service dept.?",
+        category: "EOHS Satisfaction"
     },
     {
         id: 4,
-        text: "How well did the department understand your needs?",
-        category: "Understanding"
+        text: "How satisfied are you with the overall service quality in principle?",
+        category: "Service Quality"
+    },
+    {
+        id: 5,
+        text: "Do you feel the service dept. focuses on loss/waste reduction?",
+        category: "Waste Reduction"
     }
 ];
 
@@ -35,6 +39,8 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const [allfeedbacks, setAllFeedBacks] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleLogout = async () => {
         try {
@@ -47,14 +53,16 @@ const AdminDashboard = () => {
 
     const fetchFeedbacks = async () => {
         try {
-            const querySnapshot = await getDocs(collection(db, "feedbacks"));
-            const feedbacks = [];
-            querySnapshot.forEach((doc) => {
-                feedbacks.push({ id: doc.id, ...doc.data() });
-            });
+            setLoading(true);
+            const feedbacks = await getFeedbacks();
+            console.log('Fetched feedbacks:', feedbacks); // Debug log
             setAllFeedBacks(feedbacks);
+            setError(null);
         } catch (error) {
             console.error("Error fetching feedbacks: ", error);
+            setError('Failed to fetch feedbacks');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -62,10 +70,26 @@ const AdminDashboard = () => {
         fetchFeedbacks();
     }, []);
 
+    const handleDelete = async (feedbackId) => {
+        if (window.confirm("Are you sure you want to delete this feedback?")) {
+            try {
+                setLoading(true);
+                await deleteFeedback(feedbackId);
+                await fetchFeedbacks();
+                alert("Feedback deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting feedback:", error);
+                alert("Failed to delete feedback.");
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
     const groupFeedBackByType = () => {
         const groupFeedBack = {};
         allfeedbacks.forEach((feedback) => {
-            const type = feedback.department;
+            const type = feedback.department || 'Unknown';
 
             if (!groupFeedBack[type]) {
                 groupFeedBack[type] = { totalRating: 0, count: 0 };
@@ -75,7 +99,8 @@ const AdminDashboard = () => {
             let questionCount = 0;
             
             if (feedback.ratings) {
-                Object.values(feedback.ratings).forEach(rating => {
+                const ratings = typeof feedback.ratings === 'string' ? JSON.parse(feedback.ratings) : feedback.ratings;
+                Object.values(ratings).forEach(rating => {
                     if (rating && !isNaN(rating)) {
                         totalRating += Number(rating);
                         questionCount++;
@@ -83,9 +108,12 @@ const AdminDashboard = () => {
                 });
             }
 
-            groupFeedBack[type].totalRating += totalRating;
-            groupFeedBack[type].count += questionCount;
+            if (questionCount > 0) {
+                groupFeedBack[type].totalRating += totalRating / questionCount;
+                groupFeedBack[type].count++;
+            }
         });
+
         return groupFeedBack;
     };
 
@@ -98,12 +126,13 @@ const AdminDashboard = () => {
                 'Name': feedback.name,
                 'Email': feedback.email,
                 'Department': feedback.department,
-                'Comments': feedback.finalComment
+                'Comments': feedback.final_comment
             };
 
             // Add ratings for each question
             if (feedback.ratings) {
-                Object.entries(feedback.ratings).forEach(([questionId, rating]) => {
+                const ratings = typeof feedback.ratings === 'string' ? JSON.parse(feedback.ratings) : feedback.ratings;
+                Object.entries(ratings).forEach(([questionId, rating]) => {
                     const question = questions.find(q => q.id === parseInt(questionId));
                     if (question) {
                         row[`Q${questionId} - ${question.text}`] = rating;
@@ -300,7 +329,7 @@ const AdminDashboard = () => {
                                                     </div>
                                                 ))}
                                             </td>
-                                            <td className="px-4 py-2 text-sm text-gray-900">{feedback.finalComment}</td>
+                                            <td className="px-4 py-2 text-sm text-gray-900">{feedback.final_comment}</td>
                                         </tr>
                                     ))}
                             </tbody>
